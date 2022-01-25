@@ -10,12 +10,12 @@ jobs:
     env:
       IS_PUSH_MASTER: ${{ github.ref == 'refs/heads/master' }}    
     steps:
-    - name: PR Comment
-      if: env.IS_PUSH_MASTER == 'true' 
-      uses: github-actions-up-and-running/pr-comment@v1.0.1
-      with:
-       repo-token: ${{ secrets.GITHUB_TOKEN }}
-       message: Nice PR!👍
+    #- name: PR Comment
+    # if: env.IS_PUSH_MASTER == 'true' 
+    # uses: github-actions-up-and-running/pr-comment@v1.0.1
+    # with:
+    #  repo-token: ${{ secrets.GITHUB_TOKEN }}
+    #  message: Nice PR!👍
     - name: Check out code
       uses: actions/checkout@v2
       with:
@@ -33,6 +33,7 @@ jobs:
     - name: Build
       run: yarn run build
   snyk:
+    needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -47,9 +48,9 @@ jobs:
         image: yanakiy/dwv
         args: --file=Dockerfile
   publish_to_dockerhub:
-    runs-on: ubuntu-latest
     needs: snyk
     if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
     steps:
     - name: Log in to Docker Hub
       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
