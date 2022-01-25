@@ -47,6 +47,15 @@ jobs:
       with:
         image: yanakiy/dwv
         args: --file=Dockerfile
+    - name: Deploy to Cloud Run
+      id: deploy
+      uses: google-github-actions/deploy-cloudrun@v0
+      with:
+        image: yanakiy/dwv
+        service: dwv-viewer
+        credentials: ${{ secrets.GCP_SA_KEY }}
+    - name: Show Output
+      run: echo ${{ steps.deploy.outputs.url }}
   publish_to_dockerhub:
     needs: snyk
     if: ${{ github.ref == 'refs/heads/master' }}
