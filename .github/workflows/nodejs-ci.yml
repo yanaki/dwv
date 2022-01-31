@@ -9,9 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IS_PUSH_MASTER: ${{ github.ref == 'refs/heads/master' }}    
-      PROJECT_ID: "peaceful-elf-339317"
-      SERVICE: "dwv"
-      REGION: "europe-north1"
     steps:
     #- name: PR Comment
     # if: env.IS_PUSH_MASTER == 'true' 
@@ -75,6 +72,10 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
   deploy_to_cloud:
+    env:
+      PROJECT_ID: "peaceful-elf-339317"
+      SERVICE: "dwv"
+      REGION: "europe-north1"
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
