@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IS_PUSH_MASTER: ${{ github.ref == 'refs/heads/master' }}    
+      PROJECT_ID: "peaceful-elf-339317"
+      SERVICE: "dwv"
+      REGION: "europe-north1"
     steps:
     #- name: PR Comment
     # if: env.IS_PUSH_MASTER == 'true' 
@@ -89,7 +92,7 @@ jobs:
 
     - name: Build and Push Container
       run: |-
-        docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} example-app/
+        docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
         docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
     - name: Deploy to Cloud Run
       id: deploy
