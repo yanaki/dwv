@@ -8,5 +8,6 @@ RUN rm -rf ./demo/*/node_modules/dwv/dist/*.*
 COPY ./dist/* ./demo/trunk/node_modules/dwv/dist/
 
 FROM nginx
+ENV PORT=8080
 COPY --from=builder static-content/demo/trunk/ /usr/share/nginx/html
-EXPOSE 80
+
