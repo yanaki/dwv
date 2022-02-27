@@ -11,4 +11,4 @@ FROM nginx
 ENV PORT 8080
 EXPOSE 8080
 COPY --from=builder static-content/demo/trunk/ /usr/share/nginx/html
-
+COPY ngnixConfig.conf /etc/nginx/conf.d/default.conf
