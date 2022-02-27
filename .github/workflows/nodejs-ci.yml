@@ -39,6 +39,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build a Docker image
       run: docker build -t yanakiy/dwv .
+    - name: Show Github ref
+      run: echo ${{ github.ref }}
     - name: Run Snyk to check Docker image for vulnerabilities
       continue-on-error: true
       uses: snyk/actions/docker@master
@@ -90,7 +92,8 @@ jobs:
 
     - name: Authorize Docker push
       run: gcloud auth configure-docker
-
+    - name: Check gcloud
+      run: gcloud info
     - name: Build and Push Container
       run: |-
         docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
