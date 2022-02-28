@@ -119,7 +119,7 @@ jobs:
     - name: Show Output
       run: echo ${{ steps.deploy.outputs.url }} ${{ steps.deploy_prod.outputs.url }}
     - name: PR Comment
-      if: github.ref != 'refs/heads/develop
+      if: github.ref != 'refs/heads/develop'
       uses: github-actions-up-and-running/pr-comment@v1.0.1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
