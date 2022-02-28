@@ -10,12 +10,6 @@ jobs:
     env:
       IS_PUSH_MASTER: ${{ github.ref == 'refs/heads/master' }}    
     steps:
-    #- name: PR Comment
-    # if: env.IS_PUSH_MASTER == 'true' 
-    # uses: github-actions-up-and-running/pr-comment@v1.0.1
-    # with:
-    #  repo-token: ${{ secrets.GITHUB_TOKEN }}
-    #  message: Nice PR!👍
     - name: Check out code
       uses: actions/checkout@v2
       with:
@@ -51,7 +45,7 @@ jobs:
         args: --file=Dockerfile
   publish_to_dockerhub:
     needs: snyk
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
     - name: Log in to Docker Hub
@@ -73,7 +67,7 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-  deploy_to_cloud:
+  deploy_to_cloud_pr:
     env:
       PROJECT_ID: "peaceful-elf-339317"
       SERVICE: "dwv"
@@ -102,9 +96,19 @@ jobs:
       id: deploy
       uses: google-github-actions/deploy-cloudrun@v0
       with:
-        service: ${{ env.SERVICE }}
+        service: ${{ env.SERVICE }}-${{  github.sha }}
         image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
         region: ${{ env.REGION }}
-
+    - name: Make service accessible
+      run: |-
+        gcloud run services add-iam-policy-binding ${{ env.SERVICE }}-${{  github.sha }} \
+        --member="allUsers" \
+        --role="roles/run.invoker"
     - name: Show Output
-      run: echo ${{ steps.deploy.outputs.url }}
+      run: echo 
+    - name: PR Comment
+      if: github.event.pull_request.action == "open"
+      uses: github-actions-up-and-running/pr-comment@v1.0.1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        message: Test your change at ${{ steps.deploy.outputs.url }}!👍
