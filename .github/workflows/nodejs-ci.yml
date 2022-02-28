@@ -105,6 +105,7 @@ jobs:
       run: |-
         docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
         docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
+        echo ${{ github.event.pull_request }}
     - name: Deploy to Cloud Run
       id: deploy_prod
       uses: google-github-actions/deploy-cloudrun@v0
@@ -113,7 +114,7 @@ jobs:
         image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
         region: ${{ env.REGION }}    
     - name: Make PR service accessible
-      if: github.event.pull_request.action == 'opened'
+      if: github.event.pull_request.action == 'opened' || github.event.pull_request.action == 'synchronize'
       run: |-
         gcloud run services add-iam-policy-binding ${{ env.SERVICE }}-${{  github.sha }} \
         --member="allUsers" --region=${{ env.REGION }} \
