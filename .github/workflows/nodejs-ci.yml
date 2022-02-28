@@ -95,7 +95,7 @@ jobs:
         echo ${{ github.event.pull_request.synchronized }}
         echo ${{ github.event.pull_request.action }}
     - name: Deploy to Cloud Run PR
-      if: github.event.pull_request.action == 'opened' || github.event.pull_request.action == 'synchronize'
+      if: github.ref != 'refs/heads/develop'
       id: deploy
       uses: google-github-actions/deploy-cloudrun@v0
       with:
@@ -111,7 +111,7 @@ jobs:
         image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
         region: ${{ env.REGION }}    
     - name: Make PR service accessible
-      if: github.event.pull_request.action == 'opened' || github.event.pull_request.action == 'synchronize'
+      if: github.ref != 'refs/heads/develop'
       run: |-
         gcloud run services add-iam-policy-binding ${{ env.SERVICE }}-${{  github.sha }} \
         --member="allUsers" --region=${{ env.REGION }} \
