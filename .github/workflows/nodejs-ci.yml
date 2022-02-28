@@ -107,7 +107,7 @@ jobs:
     - name: Show Output
       run: echo 
     - name: PR Comment
-      if: github.event.pull_request.action == "open"
+      if: github.event.pull_request.action == 'opened'
       uses: github-actions-up-and-running/pr-comment@v1.0.1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
