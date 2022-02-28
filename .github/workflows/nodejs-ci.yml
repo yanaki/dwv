@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      IS_PUSH_MASTER: ${{ github.ref == 'refs/heads/master' }}    
+      IS_PUSH_MASTER: ${{ github.ref == 'refs/heads/develop' }}    
     steps:
     - name: Check out code
       uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
         args: --file=Dockerfile
   publish_to_dockerhub:
     needs: snyk
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
     - name: Log in to Docker Hub
@@ -92,7 +92,7 @@ jobs:
       run: |-
         docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
         docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
-        echo ${{ github.event.pull_request }}
+        echo ${{ github.event.pull_request.synchronized }}
         echo ${{ github.event.pull_request.action }}
     - name: Deploy to Cloud Run PR
       if: github.event.pull_request.action == 'opened' || github.event.pull_request.action == 'synchronize'
@@ -103,7 +103,7 @@ jobs:
         image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
         region: ${{ env.REGION }}
     - name: Deploy to Cloud Run
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/develop'
       id: deploy_prod
       uses: google-github-actions/deploy-cloudrun@v0
       with:
