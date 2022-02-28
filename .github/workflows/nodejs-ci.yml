@@ -92,18 +92,31 @@ jobs:
       run: |-
         docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
         docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
-    - name: Deploy to Cloud Run
+    - name: Deploy to Cloud Run PR
+      if: github.event.pull_request.action == 'opened'
       id: deploy
       uses: google-github-actions/deploy-cloudrun@v0
       with:
         service: ${{ env.SERVICE }}-${{  github.sha }}
         image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
         region: ${{ env.REGION }}
+    - name: Build and Push Prod Container
+      if: github.ref == 'refs/heads/master'
+      run: |-
+        docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
+        docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
+    - name: Deploy to Cloud Run
+      id: deploy_prod
+      uses: google-github-actions/deploy-cloudrun@v0
+      with:
+        service: ${{ env.SERVICE }}
+        image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
+        region: ${{ env.REGION }}    
     - name: Make service accessible
       run: |-
         gcloud run services add-iam-policy-binding ${{ env.SERVICE }}-${{  github.sha }} \
-        --member="allUsers" \
-        --role="roles/run.invoker"
+        --member="allUsers" --region=${{ env.REGION }} \
+        --role="roles/run.invoker --quiet"
     - name: Show Output
       run: echo 
     - name: PR Comment
