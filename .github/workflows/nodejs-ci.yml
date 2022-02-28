@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      IS_PUSH_MASTER: ${{ github.ref == 'refs/heads/master' }}    
+      IS_PUSH_MASTER: ${{ github.ref == 'refs/heads/develop' }}    
     steps:
     - name: Check out code
       uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
         args: --file=Dockerfile
   publish_to_dockerhub:
     needs: snyk
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
     - name: Log in to Docker Hub
@@ -103,7 +103,7 @@ jobs:
         image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
         region: ${{ env.REGION }}
     - name: Deploy to Cloud Run
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/develop'
       id: deploy_prod
       uses: google-github-actions/deploy-cloudrun@v0
       with:
