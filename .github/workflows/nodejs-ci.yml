@@ -112,7 +112,8 @@ jobs:
         service: ${{ env.SERVICE }}
         image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
         region: ${{ env.REGION }}    
-    - name: Make service accessible
+    - name: Make PR service accessible
+      if: github.event.pull_request.action == 'opened'
       run: |-
         gcloud run services add-iam-policy-binding ${{ env.SERVICE }}-${{  github.sha }} \
         --member="allUsers" --region=${{ env.REGION }} \
