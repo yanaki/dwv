@@ -116,7 +116,7 @@ jobs:
       run: echo ${{ steps.deploy.outputs.url }} ${{ steps.deploy_prod.outputs.url }}
     - name: Add PR comment with link 
       if: ${{ github.event_name == 'pull_request' }}
-    - uses: actions/github-script@v5
+      uses: actions/github-script@v5
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
