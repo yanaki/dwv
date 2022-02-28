@@ -92,21 +92,18 @@ jobs:
       run: |-
         docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
         docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
+        echo ${{ github.event.pull_request }}
+        echo ${{ github.event.pull_request.action }}
     - name: Deploy to Cloud Run PR
-      if: github.event.pull_request.action == 'opened'
+      if: github.event.pull_request.action == 'opened' || github.event.pull_request.action == 'synchronize'
       id: deploy
       uses: google-github-actions/deploy-cloudrun@v0
       with:
         service: ${{ env.SERVICE }}-${{  github.sha }}
         image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
         region: ${{ env.REGION }}
-    - name: Build and Push Prod Container
-      if: github.ref == 'refs/heads/master'
-      run: |-
-        docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
-        docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
-        echo ${{ github.event.pull_request }}
     - name: Deploy to Cloud Run
+      if: github.ref == 'refs/heads/master'
       id: deploy_prod
       uses: google-github-actions/deploy-cloudrun@v0
       with:
@@ -120,7 +117,7 @@ jobs:
         --member="allUsers" --region=${{ env.REGION }} \
         --role="roles/run.invoker --quiet"
     - name: Show Output
-      run: echo 
+      run: echo ${{ steps.deploy.outputs.url }}
     - name: PR Comment
       if: github.event.pull_request.action == 'opened'
       uses: github-actions-up-and-running/pr-comment@v1.0.1
