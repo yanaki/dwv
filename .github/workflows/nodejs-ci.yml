@@ -114,7 +114,7 @@ jobs:
       if: github.ref != 'refs/heads/develop'
       run: |-
         gcloud run services add-iam-policy-binding ${{ env.SERVICE }}-${{  github.sha }} \
-        --member="allUsers" --region=${{ env.REGION }} \
+        --member="allUsers" --region=${{ env.REGION }} --project=${{ env.PROJECT_ID }}\
         --role="roles/run.invoker --quiet"
     - name: Show Output
       run: echo ${{ steps.deploy.outputs.url }} ${{ steps.deploy_prod.outputs.url }}
