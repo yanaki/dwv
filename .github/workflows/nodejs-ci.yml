@@ -92,7 +92,7 @@ jobs:
       run: |-
         docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }} .
         docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
-        echo ${{ github.event.pull_request }}
+        echo ${{ github.event.pull_request.synchronized }}
         echo ${{ github.event.pull_request.action }}
     - name: Deploy to Cloud Run PR
       if: github.event.pull_request.action == 'opened' || github.event.pull_request.action == 'synchronize'
