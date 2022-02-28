@@ -122,5 +122,7 @@ jobs:
         script: |
           github.rest.issues.createComment({
             issue_number: ${{ github.event.number }},
+            owner: context.repo.owner,
+            repo: context.repo.repo,
             body: '👋 Test your change at ${{ steps.deploy.outputs.url }} !'
           })
