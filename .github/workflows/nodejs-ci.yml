@@ -117,7 +117,6 @@ jobs:
     - name: Make PR service accessible
       if: github.ref != 'refs/heads/develop'
       run: |-
-        gcloud config set project ${{ env.PROJECT_ID }}
         gcloud run services add-iam-policy-binding ${{ env.SERVICE }}-${{ github.sha }} \
         --member="allUsers" --region=${{ env.REGION }} --project=${{ env.PROJECT_ID }} \
         --role="roles/run.invoker" --quiet
